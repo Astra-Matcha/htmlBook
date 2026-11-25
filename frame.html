@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 책장 넘김 eBook</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      height: 100vh;
+      background: #ded7c8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: "Batang", "Noto Serif KR", Georgia, serif;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    /* 3D 원근 공간 */
+    .scene {
+      width: 840px;
+      max-width: 94vw;
+      height: 560px;
+      max-height: 78vh;
+      perspective: 2200px;
+      position: relative;
+    }
+
+    .book {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+
+    /* 책 중앙 접힌 선 그림자 */
+    .book::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 24px;
+      height: 100%;
+      transform: translateX(-50%);
+      background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.12), rgba(0,0,0,0));
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* 한 장(앞면 + 뒷면) */
+    .leaf {
+      width: 50%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      right: 0;
+      transform-origin: left center;
+      transform-style: preserve-3d;
+      transition: transform 0.85s cubic-bezier(0.645, 0.045, 0.355, 1);
+      cursor: pointer;
+    }
+
+    .leaf.flipped {
+      transform: rotateY(-180deg);
+    }
+
+    /* 페이지 앞·뒷면 공통 스타일 */
+    .page {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      background: #fdfbf7;
+      padding: 42px 38px;
+      box-shadow: inset 0 0 25px rgba(0,0,0,0.03), 0 8px 20px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #2b2b2b;
+      line-height: 1.85;
+      font-size: 15.5px;
+    }
+
+    /* 오른쪽 면(홀수 페이지) */
+    .page.front {
+      border-radius: 0 8px 8px 0;
+      border-left: 1px solid #e5dfd3;
+    }
+
+    /* 왼쪽 면(짝수 페이지) */
+    .page.back {
+      transform: rotateY(180deg);
+      border-radius: 8px 0 0 8px;
+      border-right: 1px solid #e5dfd3;
+    }
+
+    /* 표지 스타일 */
+    .cover {
+      background: #3b4d3b;
+      color: #f4efe6;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border: 2px solid #2c3a2c;
+    }
+    .cover h1 {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+    .cover p { opacity: 0.85; font-size: 1rem; }
+
+    .content h2 {
+      font-size: 1.25rem;
+      margin-top: 0;
+      border-bottom: 1px solid #dcd5c7;
+      padding-bottom: 8px;
+    }
+    .content p {
+      margin: 0 0 1em;
+      text-align: justify;
+      text-indent: 1em;
+    }
+
+    .page-num {
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      font-family: sans-serif;
+    }
+
+    /* 하단 버튼 컨트롤 */
+    .controls {
+      margin-top: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+    button {
+      padding: 8px 16px;
+      border: 1px solid #b8b0a0;
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background: #f2efe9; }
+  </style>
+</head>
+<body>
+
+  <div class="scene">
+    <div class="book" id="book">
+
+      <!-- 1번째 종이 (표지 / 속표지) -->
+      <div class="leaf">
+        <div class="page front cover">
+          <h1>나의 작은 전자책</h1>
+          <p>지은이: 홍길동</p>
+        </div>
+        <div class="page back">
+          <div class="content">
+            <h2>머리말</h2>
+            <p>오른쪽 페이지를 클릭하거나 하단 버튼을 누르면 종이책처럼 책장이 넘어갑니다.</p>
+            <p>키보드 좌우 화살표(←, →)로도 페이지를 넘길 수 있습니다.</p>
+          </div>
+          <div class="page-num">- 1 -</div>
+        </div>
+      </div>
+
+      <!-- 2번째 종이 (2p / 3p) -->
+      <div class="leaf">
+        <div class="page front">
+          <div class="content">
+            <h2>1장. 시작하는 글</h2>
+            <p>HTML과 CSS의 3D 회전(rotateY) 속성을 이용하면 별도의 무거운 프로그램 없이도 웹 브라우저에서 실제 책을 넘기는 듯한 입체감을 구현할 수 있습니다.</p>
+            <p>각 종이는 앞면(.front)과 뒷면(.back)으로 이루어져 있으며, 왼쪽 책등을 축으로 180도 회전합니다.</p>
+          </div>
+          <div class="page-num">- 2 -</div>
+        </div>
+        <div class="page back">
+          <div class="content">
+            <h2>2장. 이야기 이어가기</h2>
+            <p>새로운 페이지를 추가하고 싶다면 HTML 코드에서 <code>&lt;div class="leaf"&gt;</code> 블록을 복사해 아래에 붙여넣기만 하면 됩니다.</p>
+            <p>종이가 넘어가는 순서와 쌓이는 높이(z-index)는 자바스크립트가 자동으로 계산해 줍니다.</p>
+          </div>
+          <div class="page-num">- 3 -</div>
+        </div>
+      </div>
+
+      <!-- 3번째 종이 (4p / 뒷표지) -->
+      <div class="leaf">
+        <div class="page front">
+          <div class="content">
+            <h2>마치며</h2>
+            <p>읽어주셔서 감사합니다. 원하는 이미지나 사진, 장식을 각 페이지 안에 자유롭게 넣어 나만의 디지털 북을 완성해 보세요.</p>
+          </div>
+          <div class="page-num">- 4 -</div>
+        </div>
+        <div class="page back cover">
+          <p>끝</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="prevBtn">◀ 이전 장</button>
+    <span id="status">표지</span>
+    <button id="nextBtn">다음 장 ▶</button>
+  </div>
+
+  <script>
+    const leaves = Array.from(document.querySelectorAll('.leaf'));
+    const statusText = document.getElementById('status');
+    let current = 0; // 넘어간 종이 수
+
+    function updateBook() {
+      leaves.forEach((leaf, index) => {
+        if (index < current) {
+          leaf.classList.add('flipped');
+          leaf.style.zIndex = index + 1;
+        } else {
+          leaf.classList.remove('flipped');
+          leaf.style.zIndex = leaves.length - index;
+        }
+      });
+
+      if (current === 0) statusText.textContent = '표지';
+      else if (current === leaves.length) statusText.textContent = '뒷표지';
+      else statusText.textContent = `${current * 2 - 1} - ${current * 2} 페이지`;
+    }
+
+    function nextLeaf() {
+      if (current < leaves.length) {
+        current++;
+        updateBook();
+      }
+    }
+
+    function prevLeaf() {
+      if (current > 0) {
+        current--;
+        updateBook();
+      }
+    }
+
+    // 페이지 직접 클릭 시 넘김 (오른쪽 클릭 -> 다음, 왼쪽 클릭 -> 이전)
+    leaves.forEach((leaf, index) => {
+      leaf.addEventListener('click', () => {
+        if (index === current) nextLeaf();
+        else if (index === current - 1) prevLeaf();
+      });
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', nextLeaf);
+    document.getElementById('prevBtn').addEventListener('click', prevLeaf);
+
+    // 키보드 방향키 지원
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') nextLeaf();
+      if (e.key === 'ArrowLeft') prevLeaf();
+    });
+
+    updateBook();
+  </script>
+</body>
+</html>
