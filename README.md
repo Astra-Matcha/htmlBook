@@ -27,3 +27,6 @@
 - **선택자 오타 수정**: `<style>` 상단의 `- { box-sizing: border-box; }`는 전체 선택자인 **`* { box-sizing: border-box; }`**로 수정해야 합니다.
 - **페이지 분량 조절**: 페이지 영역 크기가 제한되어 있으므로, 본문이 지나치게 길면 하단 각주나 쪽 번호와 겹칠 수 있어 한 면당 분량을 조절해야 합니다.
 - **표지 스타일 적용**: `.cover` 클래스를 함께 사용해 앞표지(`.page.front.cover`)와 뒷표지(`.page.back.cover`)를 구성합니다.
+
+## 6. no-indent
+- ** <p class="no-indent"> 하면 들여쓰기 없음
