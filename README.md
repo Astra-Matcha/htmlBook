@@ -29,4 +29,4 @@
 - **표지 스타일 적용**: `.cover` 클래스를 함께 사용해 앞표지(`.page.front.cover`)와 뒷표지(`.page.back.cover`)를 구성합니다.
 
 ## 6. no-indent
-- ** <p class="no-indent"> 하면 들여쓰기 없음
+- ** `<p class="no-indent">` 하면 들여쓰기 없음
