@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3D 책장 넘김 + 각주 eBook</title>
+  <title>3D 책장 넘김 + 분리형 각주 eBook</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -128,8 +128,9 @@
       cursor: pointer;
       font-family: sans-serif;
     }
-    .fn-ref:hover {
-      background: rgba(139, 58, 43, 0.22);
+    .fn-ref:hover,
+    .fn-ref.is-open {
+      background: rgba(139, 58, 43, 0.24);
     }
 
     /* 페이지 하단 각주 영역 */
@@ -146,17 +147,19 @@
       color: #555;
       font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
     }
+    .footnotes:empty {
+      display: none;
+      border-top: none;
+      padding-top: 0;
+      margin-bottom: 0;
+    }
 
     .fn-item {
-      display: none;
-      padding: 4px 6px;
+      padding: 5px 8px;
       border-radius: 4px;
       margin-bottom: 4px;
       background: #f4efe4;
       cursor: pointer;
-    }
-    .fn-item.active {
-      display: block;
       animation: fadeIn 0.2s ease;
     }
     .fn-item strong {
@@ -209,12 +212,10 @@
           <div class="content">
             <h2>머리말</h2>
             <p>전자책<span class="fn-ref" data-fn="fn-1">1)</span>에서는 종이책의 하단 주석처럼 본문 속 번호를 눌러 추가 설명을 바로 확인할 수 있습니다.</p>
-            <p>본문 중 붉은색 위첨자 번호를 클릭해 보세요. 하단에 각주가 열리며, 열린 각주를 다시 누르면 닫힙니다.</p>
+            <p>본문 중 붉은색 위첨자 번호를 클릭해 보세요. 각주 데이터는 스크립트에 따로 저장되어 있고, 누를 때만 이 페이지 아래에 나타납니다.</p>
           </div>
           <div class="page-footer">
-            <div class="footnotes">
-              <div class="fn-item" id="fn-1"><strong>1) 전자책(eBook):</strong> 종이책의 내용을 디지털 파일 형태로 변환하여 PC, 스마트폰, 전용 단말기 등에서 읽을 수 있도록 만든 책.</div>
-            </div>
+            <div class="footnotes"></div>
             <div class="page-num">- 1 -</div>
           </div>
         </div>
@@ -226,25 +227,20 @@
           <div class="content">
             <h2>1장. 각주 활용하기</h2>
             <p>전문 서적이나 논문, 번역서에서는 독자의 흐름을 끊지 않기 위해 부연 설명을 미주<span class="fn-ref" data-fn="fn-2">2)</span> 대신 각주<span class="fn-ref" data-fn="fn-3">3)</span>로 처리하는 경우가 많습니다.</p>
-            <p>한 페이지 안에 여러 개의 각주를 넣을 수도 있습니다. 필요한 번호만 골라서 펼쳐 볼 수 있어 지면이 깔끔하게 유지됩니다.</p>
+            <p>각주를 페이지마다 미리 적어 둘 필요가 없어 원고를 수정하거나 페이지를 나눌 때 훨씬 편합니다.</p>
           </div>
           <div class="page-footer">
-            <div class="footnotes">
-              <div class="fn-item" id="fn-2"><strong>2) 미주(Endnote):</strong> 책이나 장의 맨 뒷부분에 한꺼번에 모아 놓는 주석.</div>
-              <div class="fn-item" id="fn-3"><strong>3) 각주(Footnote):</strong> 해당 본문이 있는 페이지의 맨 아래쪽에 달아 놓는 주석.</div>
-            </div>
+            <div class="footnotes"></div>
             <div class="page-num">- 2 -</div>
           </div>
         </div>
         <div class="page back">
           <div class="content">
             <h2>2장. 작성 방법</h2>
-            <p>본문에는 <code>&lt;span class="fn-ref" data-fn="fn-4"&gt;4)&lt;/span&gt;</code>를 넣고, 같은 페이지의 <code>.footnotes</code> 안에 동일한 <code>id="fn-4"</code>를 가진 설명 박스를 추가하면 자동으로 연결됩니다<span class="fn-ref" data-fn="fn-4">4)</span>.</p>
+            <p>본문에는 <code>&lt;span class="fn-ref" data-fn="fn-4"&gt;4)&lt;/span&gt;</code>만 두고, <code>footnotesData</code> 객체에 <code>"fn-4"</code> 항목을 추가하면 자동으로 연결됩니다<span class="fn-ref" data-fn="fn-4">4)</span>.</p>
           </div>
           <div class="page-footer">
-            <div class="footnotes">
-              <div class="fn-item" id="fn-4"><strong>4) 연결 규칙:</strong> <code>data-fn</code> 값과 하단 <code>.fn-item</code>의 <code>id</code> 값만 서로 일치시키면 됩니다.</div>
-            </div>
+            <div class="footnotes"></div>
             <div class="page-num">- 3 -</div>
           </div>
         </div>
@@ -258,6 +254,7 @@
             <p>각주를 클릭할 때는 책장이 넘어가지 않도록 처리되어 있어, 독자가 설명을 편하게 읽고 닫을 수 있습니다.</p>
           </div>
           <div class="page-footer">
+            <div class="footnotes"></div>
             <div class="page-num">- 4 -</div>
           </div>
         </div>
@@ -276,11 +273,81 @@
   </div>
 
   <script>
+    // 1. 각주 중앙 저장소 (페이지와 분리하여 관리)
+    const footnotesData = {
+      "fn-1": {
+        label: "1)",
+        text: "전자책(eBook): 종이책의 내용을 디지털 파일 형태로 변환하여 PC, 스마트폰, 전용 단말기 등에서 읽을 수 있도록 만든 책."
+      },
+      "fn-2": {
+        label: "2)",
+        text: "미주(Endnote): 책이나 장의 맨 뒷부분에 한꺼번에 모아 놓는 주석."
+      },
+      "fn-3": {
+        label: "3)",
+        text: "각주(Footnote): 해당 본문이 있는 페이지의 맨 아래쪽에 달아 놓는 주석."
+      },
+      "fn-4": {
+        label: "4)",
+        text: "분리 관리: 본문 span의 data-fn 값과 footnotesData의 키만 맞추면, 해당 페이지 하단에 각주가 동적으로 생성됩니다."
+      }
+    };
+
     const leaves = Array.from(document.querySelectorAll('.leaf'));
     const statusText = document.getElementById('status');
     let current = 0;
 
+    function closeAllFootnotes() {
+      document.querySelectorAll('.footnotes').forEach((box) => {
+        box.innerHTML = '';
+      });
+      document.querySelectorAll('.fn-ref.is-open').forEach((ref) => {
+        ref.classList.remove('is-open');
+      });
+    }
+
+    function toggleFootnote(refEl) {
+      const fnKey = refEl.getAttribute('data-fn');
+      const noteInfo = footnotesData[fnKey];
+      const pageEl = refEl.closest('.page');
+      const footnotesContainer = pageEl ? pageEl.querySelector('.footnotes') : null;
+
+      if (!noteInfo || !footnotesContainer) return;
+
+      const existingItem = footnotesContainer.querySelector(`[data-fn-item="${fnKey}"]`);
+
+      // 이미 열려 있으면 닫기
+      if (existingItem) {
+        existingItem.remove();
+        refEl.classList.remove('is-open');
+        return;
+      }
+
+      // 새로 열기
+      const itemEl = document.createElement('div');
+      itemEl.className = 'fn-item';
+      itemEl.setAttribute('data-fn-item', fnKey);
+
+      const strongEl = document.createElement('strong');
+      strongEl.textContent = noteInfo.label;
+
+      itemEl.appendChild(strongEl);
+      itemEl.appendChild(document.createTextNode(' ' + noteInfo.text));
+
+      // 각주 박스 클릭 시 닫기 (페이지 넘김 방지)
+      itemEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        itemEl.remove();
+        refEl.classList.remove('is-open');
+      });
+
+      footnotesContainer.appendChild(itemEl);
+      refEl.classList.add('is-open');
+    }
+
     function updateBook() {
+      closeAllFootnotes();
+
       leaves.forEach((leaf, index) => {
         if (index < current) {
           leaf.classList.add('flipped');
@@ -319,23 +386,11 @@
       });
     });
 
-    // 각주 번호 클릭 -> 하단 각주 토글
+    // 각주 번호 클릭 -> 해당 페이지 하단에 동적 생성/토글
     document.querySelectorAll('.fn-ref').forEach((ref) => {
       ref.addEventListener('click', (e) => {
         e.stopPropagation();
-        const targetId = ref.getAttribute('data-fn');
-        const targetNote = document.getElementById(targetId);
-        if (targetNote) {
-          targetNote.classList.toggle('active');
-        }
-      });
-    });
-
-    // 열린 각주 박스 클릭 시 닫기
-    document.querySelectorAll('.fn-item').forEach((item) => {
-      item.addEventListener('click', (e) => {
-        e.stopPropagation();
-        item.classList.remove('active');
+        toggleFootnote(ref);
       });
     });
 
