@@ -31,10 +31,10 @@
 ## 6. no-indent
 - ** `<p class="no-indent">` 하면 들여쓰기 없음
 
-- '        <div class="page back cover">
-        </div>' 백커버
+- '`        <div class="page back cover">
+        </div>``` 백커버
 
-  '<div class="leaf">
+  ```<div class="leaf">
         <div class="page front">
           <div class="content">
             <p></p>
@@ -53,5 +53,5 @@
             <div class="page-num">- 3 -</div>
           </div>
         </div>
-      </div>'
+      </div>```
   페이지
