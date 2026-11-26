@@ -31,7 +31,7 @@
 ## 6. no-indent
 - ** `<p class="no-indent">` 하면 들여쓰기 없음
 
-- '`        <div class="page back cover">
+- '```        <div class="page back cover">
         </div>``` 백커버
 
   ```<div class="leaf">
