@@ -34,23 +34,23 @@
 - '```        <div class="page back cover">
         </div>``` 백커버
 
-  ```<div class="leaf">
+  ```
+        <div class="leaf">
         <div class="page front">
           <div class="content">
-            <p></p>
+
           </div>
           <div class="page-footer">
             <div class="footnotes"></div>
-            <div class="page-num">- 2 -</div>
+            <div class="page-num">- 6 -</div>
           </div>
         </div>
         <div class="page back">
-          <div class="content">
-            <p></p>
-          </div>
-          <div class="page-footer">
+            <div class="content">
+            </div>
+            <div class="page-footer">
             <div class="footnotes"></div>
-            <div class="page-num">- 3 -</div>
+            <div class="page-num">- 5 -</div>
           </div>
         </div>
       </div>```
