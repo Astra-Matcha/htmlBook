@@ -13,111 +13,159 @@
 
     body {
       background-color: #f4efe6;
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      padding: 48px 20px;
       display: flex;
       justify-content: center;
-      padding: 60px 20px;
     }
 
-    /* 책장 전체 틀 */
-    .bookshelf-container {
+    .bookshelf-wrap {
       width: 100%;
-      max-width: 900px;
+      max-width: 920px;
     }
 
-    /* 선반 한 칸 (반응형 그리드) */
-    .bookshelf {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 40px 24px;
-      padding: 0 24px;
+    /* 한 칸 선반 위 책들이 나란히 꽂히는 영역 */
+    .shelf-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 6px;
+      padding: 0 20px;
     }
 
-    /* 개별 책 디자인 */
-    .book {
+    /* 세로로 꽂힌 책(책등) */
+    .spine {
       position: relative;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      height: 200px;
-      padding: 16px;
-      border-radius: 4px 10px 10px 4px;
+      width: 54px;
+      height: 230px;
+      padding: 14px 6px;
+      border-radius: 3px 3px 0 0;
       text-decoration: none;
       color: #ffffff;
-      text-align: center;
-      box-shadow: 
-        inset 6px 0 10px rgba(0, 0, 0, 0.25), /* 책등 음영 */
-        4px 6px 12px rgba(0, 0, 0, 0.2);       /* 바닥 그림자 */
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      background-color: #4a607a;
+      box-shadow:
+        inset 3px 0 5px rgba(255, 255, 255, 0.14),
+        inset -3px 0 6px rgba(0, 0, 0, 0.35),
+        2px -2px 6px rgba(0, 0, 0, 0.12);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    /* 책등 세로선 디테일 */
-    .book::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 12px;
-      width: 2px;
-      background: rgba(255, 255, 255, 0.2);
+    /* 책등 상단/하단 장식선 */
+    .spine::before,
+    .spine::after {
+      content: "";
+      display: block;
+      width: 76%;
+      height: 2px;
+      background-color: rgba(255, 255, 255, 0.35);
+      flex-shrink: 0;
     }
 
-    /* 마우스 올렸을 때 효과 */
-    .book:hover {
-      transform: translateY(-10px) scale(1.02);
-      box-shadow: 
-        inset 6px 0 10px rgba(0, 0, 0, 0.25),
-        6px 14px 20px rgba(0, 0, 0, 0.28);
+    .spine:hover {
+      transform: translateY(-14px);
+      box-shadow:
+        inset 3px 0 5px rgba(255, 255, 255, 0.2),
+        inset -3px 0 6px rgba(0, 0, 0, 0.35),
+        4px 8px 14px rgba(0, 0, 0, 0.22);
     }
 
-    .book-title {
-      font-size: 1.05rem;
+    /* 세로 방향 제목 */
+    .spine-title {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 0.92rem;
       font-weight: 700;
-      line-height: 1.4;
-      word-break: keep-all;
-      z-index: 1;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-height: 175px;
     }
 
-    .book-author {
-      margin-top: 10px;
-      font-size: 0.8rem;
-      opacity: 0.85;
-      z-index: 1;
-    }
+    /* 책 높이 및 두께 변형 옵션 */
+    .h-tall { height: 245px; }
+    .h-med { height: 225px; }
+    .h-short { height: 205px; }
+    .w-wide { width: 66px; }
+    .w-thin { width: 44px; }
 
-    /* 나무 선반 받침대 */
+    /* 책등 색상 옵션 */
+    .c-navy { background-color: #2c3e50; }
+    .c-green { background-color: #3b6e5c; }
+    .c-blue { background-color: #3a6ea5; }
+    .c-rust { background-color: #b85d3b; }
+    .c-charcoal { background-color: #2b2d42; }
+    .c-wine { background-color: #7a3e3e; }
+    .c-plum { background-color: #5c4d7d; }
+    .c-olive { background-color: #588157; }
+    .c-ochre { background-color: #b07d2b; }
+    .c-teal { background-color: #2f6f73; }
+
+    /* 선반 받침대 */
     .shelf-board {
-      height: 18px;
+      width: 100%;
+      height: 20px;
       background: linear-gradient(to bottom, #8d5b3c, #5c3a21);
       border-radius: 4px;
-      margin-top: -2px;
       margin-bottom: 40px;
-      box-shadow: 0 8px 14px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 7px 14px rgba(0, 0, 0, 0.24);
     }
   </style>
 </head>
 <body>
+  <main class="bookshelf-wrap">
+    <!-- 첫 번째 선반 -->
+    <div class="shelf-row">
+      <a class="spine h-tall w-wide c-navy" href="/books/The Wings.html">
+        <span class="spine-title">날개 - 이상</span>
+      </a>
+      <a class="spine h-med c-green" href="/books/hesse-demian.html">
+        <span class="spine-title">데미안</span>
+      </a>
+      <a class="spine h-short w-thin c-blue" href="/books/little-prince-kr.html">
+        <span class="spine-title">어린 왕자</span>
+      </a>
+      <a class="spine h-med w-wide c-rust" href="/books/alchemist-note.html">
+        <span class="spine-title">연금술사</span>
+      </a>
+      <a class="spine h-tall c-charcoal" href="/books/cosmos-sagan.html">
+        <span class="spine-title">코스모스</span>
+      </a>
+      <a class="spine h-med w-wide c-wine" href="/books/sapiens-summary.html">
+        <span class="spine-title">사피엔스</span>
+      </a>
+      <a class="spine h-short c-plum" href="/books/ningen-shikkaku.html">
+        <span class="spine-title">인간 실격</span>
+      </a>
+      <a class="spine h-med c-olive" href="/books/vegetarian-review.html">
+        <span class="spine-title">채식주의자</span>
+      </a>
+      <a class="spine h-tall w-thin c-ochre" href="/books/norwegian-wood.html">
+        <span class="spine-title">상실의 시대</span>
+      </a>
+      <a class="spine h-short w-wide c-teal" href="/books/crime-and-punishment.html">
+        <span class="spine-title">죄와 벌</span>
+      </a>
+    </div>
+    <div class="shelf-board"></div>
 
-  <div class="bookshelf-container" id="shelf-container"></div>
-
-  <script>
-    const books = [
-      { slug: '1984', title: '1984', author: '조지 오웰', color: '#2b3a4a' },
-      { slug: 'demian', title: '데미안', author: '헤르만 헤세', color: '#3b6e5c' },
-      { slug: 'little-prince', title: '어린 왕자', author: '생텍쥐페리', color: '#3a6ea5' },
-      { slug: 'alchemist', title: '연금술사', author: '파울로 코엘료', color: '#b85d3b' },
-      { slug: 'cosmos', title: '코스모스', author: '칼 세이건', color: '#1f2833' },
-      { slug: 'sapiens', title: '사피엔스', author: '유발 하라리', color: '#7a3e3e' },
-      { slug: 'no-longer-human', title: '인간 실격', author: '다자이 오사무', color: '#4a4e69' },
-      { slug: 'vegetarian', title: '채식주의자', author: '한강', color: '#588157' }
-    ];
-
-    const container = document.getElementById('shelf-container');
-    const booksPerRow = 4; // 한 줄(선반)에 배치할 책의 개수
-
-    // 선반 단위로 책을 나누어 렌더링
-    for (let i = 0; i < books.length; i += booksPerRow) {
-      const rowBooks = books.slice(i, i + booksPerRow);
-
-      const shelf = document.createElement('div');
+    <!-- 두 번째 선반 -->
+    <div class="shelf-row">
+      <a class="spine h-med w-wide c-plum" href="/books/rakugo-jugemu.html">
+        <span class="spine-title">주게무 이야기</span>
+      </a>
+      <a class="spine h-tall c-blue" href="/books/ukiyoe-wave.html">
+        <span class="spine-title">가나가와 해변</span>
+      </a>
+      <a class="spine h-short c-green" href="/books/bistro-notes.html">
+        <span class="spine-title">주방 일지</span>
+      </a>
+    </div>
+    <div class="shelf-board"></div>
+  </main>
+</body>
+</html>
