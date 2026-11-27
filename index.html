@@ -1,1 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나의 책장</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
+    body {
+      background-color: #f4efe6;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    /* 책장 전체 틀 */
+    .bookshelf-container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    /* 선반 한 칸 (반응형 그리드) */
+    .bookshelf {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 40px 24px;
+      padding: 0 24px;
+    }
+
+    /* 개별 책 디자인 */
+    .book {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+      padding: 16px;
+      border-radius: 4px 10px 10px 4px;
+      text-decoration: none;
+      color: #ffffff;
+      text-align: center;
+      box-shadow: 
+        inset 6px 0 10px rgba(0, 0, 0, 0.25), /* 책등 음영 */
+        4px 6px 12px rgba(0, 0, 0, 0.2);       /* 바닥 그림자 */
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    /* 책등 세로선 디테일 */
+    .book::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 12px;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* 마우스 올렸을 때 효과 */
+    .book:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 
+        inset 6px 0 10px rgba(0, 0, 0, 0.25),
+        6px 14px 20px rgba(0, 0, 0, 0.28);
+    }
+
+    .book-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.4;
+      word-break: keep-all;
+      z-index: 1;
+    }
+
+    .book-author {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      opacity: 0.85;
+      z-index: 1;
+    }
+
+    /* 나무 선반 받침대 */
+    .shelf-board {
+      height: 18px;
+      background: linear-gradient(to bottom, #8d5b3c, #5c3a21);
+      border-radius: 4px;
+      margin-top: -2px;
+      margin-bottom: 40px;
+      box-shadow: 0 8px 14px rgba(0, 0, 0, 0.25);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bookshelf-container" id="shelf-container"></div>
+
+  <script>
+    /**
+     * 책 목록 데이터
+     * - slug: 실제 이동할 경로의 파일명 (/books/{slug}.html)
+     * - title: 책 표지에 보이는 제목
+     * - author: 저자 (선택 사항, 필요 없으면 빈 문자열 ''로 두세요)
+     * - color: 책 표지 색상
+     */
+    const books = [
+      { slug: '1984', title: '1984', author: '조지 오웰', color: '#2b3a4a' },
+      { slug: 'demian', title: '데미안', author: '헤르만 헤세', color: '#3b6e5c' },
+      { slug: 'little-prince', title: '어린 왕자', author: '생텍쥐페리', color: '#3a6ea5' },
+      { slug: 'alchemist', title: '연금술사', author: '파울로 코엘료', color: '#b85d3b' },
+      { slug: 'cosmos', title: '코스모스', author: '칼 세이건', color: '#1f2833' },
+      { slug: 'sapiens', title: '사피엔스', author: '유발 하라리', color: '#7a3e3e' },
+      { slug: 'no-longer-human', title: '인간 실격', author: '다자이 오사무', color: '#4a4e69' },
+      { slug: 'vegetarian', title: '채식주의자', author: '한강', color: '#588157' }
+    ];
+
+    const container = document.getElementById('shelf-container');
+    const booksPerRow = 4; // 한 줄(선반)에 배치할 책의 개수
+
+    // 선반 단위로 책을 나누어 렌더링
+    for (let i = 0; i < books.length; i += booksPerRow) {
+      const rowBooks = books.slice(i, i + booksPerRow);
+
+      const shelf = document.createElement('div');
