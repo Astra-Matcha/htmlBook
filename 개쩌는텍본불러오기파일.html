@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TXT 이북 리더기 (가독성 개선)</title>
+  <style>
+    :root {
+      --bg-outer: #e8e4dc;
+      --bg-page: #fbf9f5;
+      --text-color: #2b2b2b;
+      --border-color: #d6cfc2;
+      --font-size: 18px;
+      --para-gap: 1.1em;      /* 문단 간격 기본값 */
+      --text-indent: 1em;     /* 첫 줄 들여쓰기 기본값 */
+    }
+
+    body.theme-white {
+      --bg-outer: #f0f0f0;
+      --bg-page: #ffffff;
+      --text-color: #111111;
+      --border-color: #dddddd;
+    }
+    body.theme-dark {
+      --bg-outer: #121212;
+      --bg-page: #1e1e1e;
+      --text-color: #d4d4d4;
+      --border-color: #333333;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-outer);
+      color: var(--text-color);
+      font-family: 'Noto Serif KR', 'Batang', serif;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      background: rgba(40, 40, 40, 0.92);
+      color: #fff;
+      padding: 10px 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      font-family: sans-serif;
+      font-size: 13px;
+    }
+
+    .toolbar button, .file-label {
+      background: #444;
+      color: #fff;
+      border: 1px solid #666;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .toolbar button:hover, .file-label:hover {
+      background: #555;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .book-wrapper {
+      padding: 40px 20px;
+    }
+
+    .book-container {
+      max-width: 720px;
+      min-height: 80vh;
+      margin: 0 auto;
+      background-color: var(--bg-page);
+      padding: 60px 70px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      border-left: 6px solid var(--border-color);
+      font-size: var(--font-size);
+    }
+
+    .book-title {
+      text-align: center;
+      font-size: 1.4em;
+      margin-bottom: 45px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    /* 문단 가독성 핵심 스타일 */
+    .book-content p {
+      margin-top: 0;
+      margin-bottom: var(--para-gap);
+      text-indent: var(--text-indent);
+      line-height: 1.95;
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+      text-align: justify;
+    }
+
+    /* 빈 줄(장면 전환 등)을 위한 여백 */
+    .book-content .scene-break {
+      height: 1.5em;
+    }
+
+    @media (max-width: 600px) {
+      .book-wrapper { padding: 15px 10px; }
+      .book-container { padding: 30px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <label class="file-label">
+      📂 TXT 열기
+      <input type="file" id="fileInput" accept=".txt">
+    </label>
+    <span>|</span>
+    <button onclick="changeFontSize(-1)">글자-</button>
+    <button onclick="changeFontSize(1)">글자+</button>
+    <span>|</span>
+    <button onclick="changeParaGap(-0.3)">문단좁게</button>
+    <button onclick="changeParaGap(0.3)">문단넓게</button>
+    <button onclick="toggleIndent()">들여쓰기 ON/OFF</button>
+    <span>|</span>
+    <button onclick="setTheme('')">세피아</button>
+    <button onclick="setTheme('theme-white')">화이트</button>
+    <button onclick="setTheme('theme-dark')">다크</button>
+  </div>
+
+  <div class="book-wrapper">
+    <div class="book-container">
+      <h1 class="book-title" id="bookTitle">파일을 선택해주세요</h1>
+      <div class="book-content" id="bookContent">
+        <p>상단의 [📂 TXT 열기] 버튼을 눌러 텍스트 파일을 불러오세요.</p>
+        <p>줄바꿈이 빡빡한 문서도 문단 간격과 첫 줄 들여쓰기가 자동으로 적용되어 눈이 훨씬 덜 피로합니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentSize = 18;
+    let currentGap = 1.1;
+    let isIndented = true;
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      document.getElementById('bookTitle').textContent = file.name.replace(/\.txt$/i, '');
+      
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        renderFormattedText(event.target.result);
+        window.scrollTo(0, 0);
+      };
+      reader.readAsText(file, 'UTF-8');
+    });
+
+    // 텍스트를 줄 단위로 분석해 깔끔한 <p> 태그로 변환
+    function renderFormattedText(rawText) {
+      const container = document.getElementById('bookContent');
+      container.innerHTML = ''; // 기존 내용 초기화
+
+      const lines = rawText.split(/\r?\n/);
+      const fragment = document.createDocumentFragment();
+
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed === '') {
+          // 원래 빈 줄이 있던 곳은 장면 전환 여백으로 처리
+          const spacer = document.createElement('div');
+          spacer.className = 'scene-break';
+          fragment.appendChild(spacer);
+        } else {
+          const p = document.createElement('p');
+          p.textContent = trimmed;
+          fragment.appendChild(p);
+        }
+      });
+
+      container.appendChild(fragment);
+    }
+
+    function changeFontSize(delta) {
+      currentSize = Math.max(13, Math.min(30, currentSize + delta));
+      document.documentElement.style.setProperty('--font-size', currentSize + 'px');
+    }
+
+    function changeParaGap(delta) {
+      currentGap = Math.max(0.2, Math.min(3.0, +(currentGap + delta).toFixed(1)));
+      document.documentElement.style.setProperty('--para-gap', currentGap + 'em');
+    }
+
+    function toggleIndent() {
+      isIndented = !isIndented;
+      document.documentElement.style.setProperty('--text-indent', isIndented ? '1em' : '0em');
+    }
+
+    function setTheme(themeClass) {
+      document.body.className = themeClass;
+    }
+  </script>
+
+</body>
+</html>
